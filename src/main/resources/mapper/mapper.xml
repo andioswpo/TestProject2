@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gf.mapper.MainMapper">
+	<insert id="saveAtt" parameterType="com.gf.model.AttInfo">
+		insert into gf_att(id,name,contexttype,length,ts,content,instanceid) values
+			(#{id},#{name},#{contextType},#{length},#{ts},
+			#{content,jdbcType=BLOB},#{instanceId})
+	</insert>
+	<select id="getAttById" resultType="com.gf.model.AttInfo">
+		select * from gf_att where id=#{id}
+	</select>
+	<select id="getAttByInstanceId" resultType="com.gf.model.AttInfo">
+		select * from gf_att where instanceid=#{instanceId}
+	</select>
+	<delete id="deleteAttById" parameterType="String">
+		delete from gf_att where id=#{id}
+	</delete>
+	<delete id="deleteAttByInstanceId" parameterType="String">
+		delete from gf_att where instanceid=#{instanceId}
+	</delete>
+	
+	<select id="findOrderById" resultType="com.gf.model.OrderInfo">
+		select o.*,a1.name provinceName,a2.name cityName,a3.name countyName
+			from gf_order o,gf_address a1,gf_address a2,gf_address a3 
+			where o.provincecode=a1.code and o.citycode=a2.code
+			and o.countycode=a3.code and o.id=#{id}
+	</select>
+	<select id="findOrder" resultType="com.gf.model.OrderInfo">
+		select o.*,a1.name provinceName,a2.name cityName,a3.name countyName
+			from gf_order o,gf_address a1,gf_address a2,gf_address a3 
+			where o.provincecode=a1.code and o.citycode=a2.code
+			and o.countycode=a3.code
+	</select>
+	<select id="findOrderItem" resultType="com.gf.model.OrderItemInfo">
+		select * from gf_orderitem where orderid=#{orderId}
+	</select>
+	<insert id="saveOrder" parameterType="com.gf.model.OrderInfo">
+		insert into gf_order(id,userid,ts,amount,name,provincecode,citycode,countycode)
+			values(#{id},#{userId},#{ts},#{amount},#{name},#{provinceCode},
+			#{cityCode},#{countyCode})
+	</insert>
+	<update id="updateOrder" parameterType="com.gf.model.OrderInfo">
+		update gf_order set userid=#{userId},ts=#{ts},amount=#{amount},name=#{name}
+			where id=#{id}
+	</update>
+	<insert id="saveOrderItem" parameterType="com.gf.model.OrderItemInfo">
+		insert into gf_orderitem(id,prdtid,num,price,amount,orderid)
+			values(#{id},#{prdtId},#{num},#{price},#{amount},#{orderId})
+	</insert>
+	<update id="updateOrderItem" parameterType="com.gf.model.OrderItemInfo">
+		update gf_orderitem set prdtid=#{prdtId},num=#{num},price=#{price},
+			amount=#{amount},orderid=#{orderId}
+			where id=#{id}
+	</update>
+	<delete id="deleteOrderItem" parameterType="com.gf.model.OrderItemInfo">
+		delete from gf_orderitem where orderid=#{orderId}
+	</delete>
+	<select id="getProviceList" resultType="com.gf.model.AddressInfo">
+		select * from gf_address where code like '%0000'
+	</select>
+	<select id="getCityList" resultType="com.gf.model.AddressInfo">
+		select * from gf_address where code like '${pcode}%00' and code not like '${pcode}0000'
+	</select>
+	<select id="getCountyList" resultType="com.gf.model.AddressInfo">
+		select * from gf_address where code like '${city}%' and code not like '${city}00'
+	</select>
+</mapper>

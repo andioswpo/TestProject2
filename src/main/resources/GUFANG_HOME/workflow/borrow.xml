@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!--
+注意:
+流程触发外部接口,其类加载器必须位于工作流引擎类加载器平级或者更高一级
+-->
+<process id="borrow" name="借款流程" description="">
+	<status id="Start" name="开始" type="synchronized" isstart="true">
+		<tostatuses>
+			<tostatus batchid="tomanager" id="deptmgr" name="部门经理审批2" condition="false" invoke="com.gf.statusflow.TestInvokeApp" invokecommand="sendmail"/>
+		</tostatuses>
+		<actors>
+		</actors>
+	</status>
+	<status id="deptmgr" name="部门经理" type="asynchronized" isstart="false">
+		<tostatuses>
+			<tostatus batchid="" id="account" name="财务审批" condition="false" invoke="" invokecommand=""/>
+			<tostatus batchid="" id="draft" name="返回修改" condition="false" invoke="" invokecommand=""/>
+			<tostatus batchid="" id="destory" name="作废" condition="false" invoke="com.gf.statusflow.TestInvokeApp" invokecommand="orderdestory"/>
+		</tostatuses>
+		<actors>
+			<actor type="user" loginid="sysadmin"/>
+		</actors>
+	</status>
+	<status id="draft" name="修改" type="synchronized" isstart="false">
+		<tostatuses>
+			<tostatus batchid="tomanager" id="deptmgr" name="部门经理审批" condition="false" invoke="com.gf.statusflow.TestInvokeApp" invokecommand="sendmail"/>
+		</tostatuses>
+		<actors>
+			<actor type="variable" id="starter"/>
+		</actors>
+	</status>
+	<status id="account" name="财务审批" type="asynchronized" isstart="false">
+		<tostatuses>
+			<tostatus batchid="" id="notice" name="通知申请人" condition="false" invoke="com.gf.statusflow.TestInvokeApp" invokecommand="orderdestory"/>
+		</tostatuses>
+		<actors>
+			<actor type="user" loginid="fiadmin"/>
+			<actor type="user" loginid="sysadmin"/>
+		</actors>
+	</status>
+
+	<status id="notice" name="通知申请人" type="asynchronized" isstart="false" workflow="outstore" condition="storeName EQ '发货库A（运达）'">
+		<tostatuses>
+			<tostatus batchid="end" id="end" name="完成" condition="false" invoke="com.gf.statusflow.TestInvokeApp" invokecommand="outstore"/>
+		</tostatuses>
+		<actors>
+			<actor type="variable" id="starter"/>
+		</actors>
+	</status>
+	<status id="destory" name="作废" type="synchronized" isstart="false">
+		<tostatuses>
+		</tostatuses>
+		<actors>
+		</actors>
+	</status>
+	<status id="end" name="结束" type="synchronized" isstart="false">
+		<tostatuses>
+		</tostatuses>
+		<actors>
+		</actors>
+	</status>
+</process>

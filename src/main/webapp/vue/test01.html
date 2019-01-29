@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test VUE</title>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+	<div id="app">
+		<span v-bind:title="order.name">{{order.name}}</span>
+		<h1 v-if="order.isvisiable">Hello Title</h1>
+		<h3 v-for="l in order.languages">{{l}}</h3>
+		<button v-on:click="setName">Click Me</button>
+		<button @click="setName">Click Me</button>
+		<br>
+		<span v-html="order.company"></span>
+		<input v-bind:disabled="order.isdisabled" v-model="order.company"/>
+		<input :disabled="order.isdisabled" v-model="order.company"/>
+		
+		<li v-for="l in order.languages">{{l}}</li>
+		<br>
+		
+		<my-tag v-for="l of order.languages" v-bind:langs="l"></my-tag>
+	</div>
+	
+	<script>
+		Vue.component('my-tag',{
+			props: ['langs'],
+			template:'<h1>{{langs}}</h1>'
+		})
+		var data = {
+				order:{
+					name:'Hello Vue',
+					isvisiable:true,
+					languages:['VUE','AngularJS','WebPack','NodeJS'],
+					company:'Sun',
+					isdisabled:false
+				}
+		}
+		
+
+		var app = new Vue({
+			el:'#app',
+			data:data,
+			methods:{
+				setName:function()
+				{
+					//this.name='C++'
+					
+					
+				}
+			},
+			computed:{
+				reverseName:{
+					get:function()
+					{
+						return this.name.split('').reverse().join('');
+					},
+					set:function(newVal)
+					{
+						this.name = newVal;
+					}
+				},
+				getTime:function()
+				{
+					return Date.now();//响应依赖
+				}
+			},
+			watch:{
+				name:function(newVal,oldVal)
+				{
+					console.log("Name newVal="+newVal+",oldVal="+oldVal);
+				},
+				company:function(nv,ov)
+				{
+					console.log("company newVal="+nv+",oldVal="+ov);
+				}
+			},
+			beforeCreate:function()
+			{
+				console.log("beforeCreate:...");
+			},
+			created:function()
+			{
+				console.log('create...');
+			},
+			beforeMount:function()
+			{
+				console.log('beforeMount...');
+				var _this = this;
+				axios.get('/test.action')
+				  .then(function (response) {
+					//alert(response.data.name);
+				    console.log('test.action='+response);
+					_this.order = response.data;
+
+				  })
+				  .catch(function (error) {
+				    console.log(error);
+				  });
+			},
+			mounted:function()
+			{
+				console.log('mount...');
+			},
+			  beforeUpdate:function()
+			  {
+				  console.log('beforeUpdate...');
+			  },
+			  updated:function()
+			  {
+				  console.log('updated...');
+				  this.name='updated';
+			  },
+			  beforeDestroy:function()
+			  {
+				  console.log('beforeDestroy...');
+			  },
+			  destroyed:function()
+			  {
+				  console.log('destroyed...');
+			  }
+		})
+		//app.$mount('#app');
+		
+		console.log('app.name==data.name='+(app.name==data.name));
+		//app.name = 'Oracle';
+		//data.name = "Sun";
+		//app.reverseName="VUE";
+	</script>
+</body>
+</html>

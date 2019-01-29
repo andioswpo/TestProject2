@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test VUE</title>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/js/base.css">
+</head>
+<body>
+	<div id="app">
+		<table>
+			<tr>
+				<th>订单编号</th>
+				<th>订单金额</th>
+				<th>订单时间</th>
+				<th>订单用户</th>
+			</tr>
+			<tr v-for="ord in orderList">
+				<td>{{ord.no}}</td>
+				<td>{{ord.amount}}</td>
+				<td>{{ord.ts}}</td>
+				<td>{{ord.userName}}</td>
+			</tr>
+		</table>
+		添加订单
+		<table>
+			<tr>
+				<td>编号</td>
+				<td><input type="text" name="no" v-model="order.no"/></td>
+			</tr>
+			<tr>
+				<td>金额</td>
+				<td><input type="text" name="no" v-model="order.amount"/></td>
+			</tr>
+			<tr>
+				<td>时间</td>
+				<td><input type="text" name="no" v-model="order.ts"/></td>
+			</tr>
+			<tr>
+				<td>用户</td>
+				<td><input type="text" name="no" v-model="order.userName"/></td>
+			</tr>
+		</table>
+		<button v-on:click="submitOrder">保存订单</button>
+	</div>
+	
+	<script>
+
+		var app = new Vue({
+			el:'#app',
+			data:{
+				orderList:{},
+				order:{
+					items:{}
+				}
+			},
+			methods:{
+				submitOrder:function()
+				{
+					var _this = this;
+					axios.post('/ordersave.action',this.order)
+					  .then(function (response) {
+						//alert(response.data.name);
+					    console.log('test.action='+response);
+					    _this.loadorder();
+					  })
+					  .catch(function (error) {
+					    console.log(error);
+					  });
+				},
+				loadorder:function()
+				{
+					var _this = this;
+					axios.get('/order.action')
+					  .then(function (response) {
+						//alert(response.data.name);
+					    console.log('test.action='+response);
+						_this.orderList = response.data;
+
+					  })
+					  .catch(function (error) {
+					    console.log(error);
+					  });
+				}
+			},
+			computed:{
+			},
+			watch:{
+
+			},
+			beforeCreate:function()
+			{
+				console.log("beforeCreate:...");
+			},
+			created:function()
+			{
+				console.log('create...');
+			},
+			beforeMount:function()
+			{
+				console.log('beforeMount...');
+				this.loadorder();
+			},
+			mounted:function()
+			{
+				console.log('mount...');
+			},
+			  beforeUpdate:function()
+			  {
+				  console.log('beforeUpdate...');
+			  },
+			  updated:function()
+			  {
+				  console.log('updated...');
+				  this.name='updated';
+			  },
+			  beforeDestroy:function()
+			  {
+				  console.log('beforeDestroy...');
+			  },
+			  destroyed:function()
+			  {
+				  console.log('destroyed...');
+			  }
+		})
+		//app.$mount('#app');
+		//app.name = 'Oracle';
+		//data.name = "Sun";
+		//app.reverseName="VUE";
+	</script>
+</body>
+</html>
